@@ -51,9 +51,12 @@ class ItemController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
+            $childCategory = ChildCategory::findOrFail($request->child_category_id);
+            $categoryTitle = $childCategory->subCategory->category->title;
             $imageName = $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/items'), $imageName);
-            $data['image'] = $imageName;
+            $relativePath = $categoryTitle . '/item image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/item image'), $imageName);
+            $data['image'] = $relativePath;
         }
 
         Item::create($data);
@@ -86,12 +89,15 @@ class ItemController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            if ($item->image && file_exists(public_path('uploads/items/' . basename($item->image)))) {
-                unlink(public_path('uploads/items/' . basename($item->image)));
+            if ($item->image && file_exists(public_path('upload/' . $item->image))) {
+                unlink(public_path('upload/' . $item->image));
             }
+            $childCategory = ChildCategory::findOrFail($request->child_category_id);
+            $categoryTitle = $childCategory->subCategory->category->title;
             $imageName = $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/items'), $imageName);
-            $data['image'] = $imageName;
+            $relativePath = $categoryTitle . '/item image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/item image'), $imageName);
+            $data['image'] = $relativePath;
         }
 
         $item->update($data);
@@ -101,8 +107,8 @@ class ItemController extends Controller
 
     public function destroy(Item $item)
     {
-        if ($item->image && file_exists(public_path('uploads/items/' . basename($item->image)))) {
-            unlink(public_path('uploads/items/' . basename($item->image)));
+        if ($item->image && file_exists(public_path('upload/' . $item->image))) {
+            unlink(public_path('upload/' . $item->image));
         }
 
         $item->delete();

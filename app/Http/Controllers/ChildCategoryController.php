@@ -51,9 +51,12 @@ class ChildCategoryController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
+            $subCategory = SubCategory::findOrFail($request->sub_category_id);
+            $categoryTitle = $subCategory->category->title;
             $imageName = $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/childcategories'), $imageName);
-            $data['image'] = $imageName;
+            $relativePath = $categoryTitle . '/chield category image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/chield category image'), $imageName);
+            $data['image'] = $relativePath;
         }
 
         ChildCategory::create($data);
@@ -84,12 +87,15 @@ class ChildCategoryController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            if ($childCategory->image && file_exists(public_path('uploads/childcategories/' . basename($childCategory->image)))) {
-                unlink(public_path('uploads/childcategories/' . basename($childCategory->image)));
+            if ($childCategory->image && file_exists(public_path('upload/' . $childCategory->image))) {
+                unlink(public_path('upload/' . $childCategory->image));
             }
+            $subCategory = SubCategory::findOrFail($request->sub_category_id);
+            $categoryTitle = $subCategory->category->title;
             $imageName = $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/childcategories'), $imageName);
-            $data['image'] = $imageName;
+            $relativePath = $categoryTitle . '/chield category image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/chield category image'), $imageName);
+            $data['image'] = $relativePath;
         }
 
         $childCategory->update($data);
@@ -106,8 +112,8 @@ class ChildCategoryController extends Controller
             ], 403);
         }
 
-        if ($childCategory->image && file_exists(public_path('uploads/childcategories/' . basename($childCategory->image)))) {
-            unlink(public_path('uploads/childcategories/' . basename($childCategory->image)));
+        if ($childCategory->image && file_exists(public_path('upload/' . $childCategory->image))) {
+            unlink(public_path('upload/' . $childCategory->image));
         }
 
         $childCategory->delete();

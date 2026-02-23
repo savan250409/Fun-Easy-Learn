@@ -17,7 +17,7 @@ class CategoryApiController extends Controller
                 'id' => $category->id,
                 'key' => $category->key,
                 'title' => $category->title,
-                'image_url' => $category->image ? str_replace(' ', '%20', 'categories/' . $category->image) : null,
+                'image_url' => $category->image ? str_replace(' ', '%20', $category->image) : null,
             ];
         });
 
@@ -62,7 +62,7 @@ class CategoryApiController extends Controller
             'id' => $category->id,
             'key' => $category->key,
             'title' => $category->title,
-            'image_url' => $category->image ? str_replace(' ', '%20', 'categories/' . $category->image) : null,
+            'image_url' => $category->image ? str_replace(' ', '%20', $category->image) : null,
             'sub_categories' => $category->subCategories->map(function ($subCategory) {
 
                 $children = $subCategory->childCategories->map(function ($childCategory) {
@@ -70,13 +70,13 @@ class CategoryApiController extends Controller
                         'id' => $childCategory->id,
                         'key' => $childCategory->key,
                         'title' => $childCategory->title,
-                        'image_url' => $childCategory->image ? str_replace(' ', '%20', 'childcategories/' . $childCategory->image) : null,
+                        'image_url' => $childCategory->image ? str_replace(' ', '%20', $childCategory->image) : null,
                         'total_item' => $childCategory->items->count(),
                         'items' => $childCategory->items->map(function ($item) {
                             return [
                                 'id' => $item->id,
                                 'title' => $item->title,
-                                'image_url' => $item->image ? str_replace(' ', '%20', 'items/' . $item->image) : null,
+                                'image_url' => $item->image ? str_replace(' ', '%20', $item->image) : null,
                             ];
                         })->values()
                     ];
@@ -90,7 +90,7 @@ class CategoryApiController extends Controller
                     'id' => $subCategory->id,
                     'key' => $subCategory->key,
                     'title' => $subCategory->title,
-                    'image_url' => $subCategory->image ? str_replace(' ', '%20', 'subcategories/' . $subCategory->image) : null,
+                    'image_url' => $subCategory->image ? str_replace(' ', '%20', $subCategory->image) : null,
                     'total_item' => $total_item,
                     'children' => $children
                 ];

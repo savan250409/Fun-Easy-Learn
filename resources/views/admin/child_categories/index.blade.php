@@ -68,7 +68,7 @@
                                 </td>
                                 <td>
                                     @if($childCategory->image)
-                                        <img src="{{ asset('uploads/childcategories/' . $childCategory->image) }}" alt="image"
+                                        <img src="{{ asset('upload/' . $childCategory->image) }}" alt="image"
                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                     @else
                                         No Image

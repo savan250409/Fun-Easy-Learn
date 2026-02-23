@@ -49,9 +49,12 @@ class SubCategoryController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
+            $category = Category::findOrFail($request->category_id);
+            $categoryTitle = $category->title;
             $imageName = $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/subcategories'), $imageName);
-            $data['image'] = $imageName;
+            $relativePath = $categoryTitle . '/sub category image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/sub category image'), $imageName);
+            $data['image'] = $relativePath;
         }
 
         SubCategory::create($data);
@@ -79,12 +82,15 @@ class SubCategoryController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            if ($subcategory->image && file_exists(public_path('uploads/subcategories/' . basename($subcategory->image)))) {
-                unlink(public_path('uploads/subcategories/' . basename($subcategory->image)));
+            if ($subcategory->image && file_exists(public_path('upload/' . $subcategory->image))) {
+                unlink(public_path('upload/' . $subcategory->image));
             }
+            $category = Category::findOrFail($request->category_id);
+            $categoryTitle = $category->title;
             $imageName = $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/subcategories'), $imageName);
-            $data['image'] = $imageName;
+            $relativePath = $categoryTitle . '/sub category image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/sub category image'), $imageName);
+            $data['image'] = $relativePath;
         }
 
         $subcategory->update($data);
@@ -101,8 +107,8 @@ class SubCategoryController extends Controller
             ], 403);
         }
 
-        if ($subcategory->image && file_exists(public_path('uploads/subcategories/' . basename($subcategory->image)))) {
-            unlink(public_path('uploads/subcategories/' . basename($subcategory->image)));
+        if ($subcategory->image && file_exists(public_path('upload/' . $subcategory->image))) {
+            unlink(public_path('upload/' . $subcategory->image));
         }
 
         $subcategory->delete();

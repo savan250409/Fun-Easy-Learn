@@ -90,7 +90,7 @@
 
                     <div class="mt-3">
                         <img id="imagePreview"
-                            src="{{ isset($item) && $item->image ? asset('uploads/items/' . $item->image) : '#' }}"
+                            src="{{ isset($item) && $item->image ? asset('upload/' . $item->image) : '#' }}"
                             alt="Image Preview"
                             style="display: {{ isset($item) && $item->image ? 'block' : 'none' }}; max-width: 150px; border-radius: 4px; border: 1px solid #eaeaea; padding: 3px;">
                     </div>

@@ -90,7 +90,7 @@
 
                     <div class="mt-3">
                         <img id="imagePreview"
-                            src="{{ isset($childCategory) && $childCategory->image ? asset('uploads/childcategories/' . $childCategory->image) : '#' }}"
+                            src="{{ isset($childCategory) && $childCategory->image ? asset('upload/' . $childCategory->image) : '#' }}"
                             alt="Image Preview"
                             style="display: {{ isset($childCategory) && $childCategory->image ? 'block' : 'none' }}; max-width: 150px; border-radius: 4px; border: 1px solid #eaeaea; padding: 3px;">
                     </div>

@@ -63,7 +63,7 @@
                                 <td class="text-muted">{{ $subcategory->category->title ?? 'N/A' }}</td>
                                 <td>
                                     @if($subcategory->image)
-                                        <img src="{{ asset('uploads/subcategories/' . $subcategory->image) }}" alt="image"
+                                        <img src="{{ asset('upload/' . $subcategory->image) }}" alt="image"
                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                     @else
                                         No Image

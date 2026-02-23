@@ -78,7 +78,7 @@
 
                     <div class="mt-3">
                         <img id="imagePreview"
-                            src="{{ isset($subcategory) && $subcategory->image ? asset('uploads/subcategories/' . $subcategory->image) : '#' }}"
+                            src="{{ isset($subcategory) && $subcategory->image ? asset('upload/' . $subcategory->image) : '#' }}"
                             alt="Image Preview"
                             style="display: {{ isset($subcategory) && $subcategory->image ? 'block' : 'none' }}; max-width: 150px; border-radius: 4px; border: 1px solid #eaeaea; padding: 3px;">
                     </div>

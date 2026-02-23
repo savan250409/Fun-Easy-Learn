@@ -37,9 +37,11 @@ class CategoryController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
+            $categoryTitle = $request->title;
             $imageName = $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/categories'), $imageName);
-            $data['image'] = $imageName;
+            $relativePath = $categoryTitle . '/category image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/category image'), $imageName);
+            $data['image'] = $relativePath;
         }
 
         Category::create($data);
@@ -65,12 +67,14 @@ class CategoryController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            if ($category->image && file_exists(public_path('uploads/categories/' . basename($category->image)))) {
-                unlink(public_path('uploads/categories/' . basename($category->image)));
+            if ($category->image && file_exists(public_path('upload/' . $category->image))) {
+                unlink(public_path('upload/' . $category->image));
             }
+            $categoryTitle = $request->title;
             $imageName = $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/categories'), $imageName);
-            $data['image'] = $imageName;
+            $relativePath = $categoryTitle . '/category image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/category image'), $imageName);
+            $data['image'] = $relativePath;
         }
 
         $category->update($data);
@@ -87,8 +91,8 @@ class CategoryController extends Controller
             ], 403);
         }
 
-        if ($category->image && file_exists(public_path('uploads/categories/' . basename($category->image)))) {
-            unlink(public_path('uploads/categories/' . basename($category->image)));
+        if ($category->image && file_exists(public_path('upload/' . $category->image))) {
+            unlink(public_path('upload/' . $category->image));
         }
 
         $category->delete();

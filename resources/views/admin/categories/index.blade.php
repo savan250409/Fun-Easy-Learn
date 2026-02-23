@@ -54,7 +54,7 @@
                                 <td>{{ $category->title }}</td>
                                 <td>
                                     @if($category->image)
-                                        <img src="{{ asset('uploads/categories/' . $category->image) }}" alt="image"
+                                        <img src="{{ asset('upload/' . $category->image) }}" alt="image"
                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                     @else
                                         No Image
