@@ -20,8 +20,10 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+Route::middleware(['guest'])->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+});
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
@@ -33,7 +35,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('child-categories', 'App\Http\Controllers\ChildCategoryController');
     Route::resource('items', 'App\Http\Controllers\ItemController');
 
-    // AJAX Routes for Cascading Dropdowns
     Route::get('/get-subcategories/{categoryId}', 'App\Http\Controllers\ChildCategoryController@getSubcategories');
     Route::get('/get-child-categories/{subCategoryId}', 'App\Http\Controllers\ItemController@getChildCategories');
+
+    // AJAX Routes for status toggling
+    Route::post('/categories/{id}/toggle-status', 'App\Http\Controllers\CategoryController@toggleStatus')->name('categories.toggle-status');
+    Route::post('/subcategories/{id}/toggle-status', 'App\Http\Controllers\SubCategoryController@toggleStatus')->name('subcategories.toggle-status');
+    Route::post('/child-categories/{id}/toggle-status', 'App\Http\Controllers\ChildCategoryController@toggleStatus')->name('child-categories.toggle-status');
+    Route::post('/items/{id}/toggle-status', 'App\Http\Controllers\ItemController@toggleStatus')->name('items.toggle-status');
 });

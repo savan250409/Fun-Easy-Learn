@@ -112,4 +112,17 @@ class SubCategoryController extends Controller
             'message' => 'SubCategory deleted successfully.'
         ]);
     }
+
+    public function toggleStatus($id)
+    {
+        $subcategory = SubCategory::findOrFail($id);
+        $subcategory->status = !$subcategory->status;
+        $subcategory->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'SubCategory status updated successfully.',
+            'new_status' => $subcategory->status
+        ]);
+    }
 }

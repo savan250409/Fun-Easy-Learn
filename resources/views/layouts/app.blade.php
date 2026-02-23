@@ -192,6 +192,7 @@
       border-radius: 4px;
       font-weight: 600;
       font-size: 0.75rem;
+      cursor: pointer;
     }
 
     .badge-inactive {
@@ -201,6 +202,7 @@
       border-radius: 4px;
       font-weight: 600;
       font-size: 0.75rem;
+      cursor: pointer;
     }
 
     .table-custom {
@@ -235,7 +237,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
-      padding: 0.5rem 0;
+      padding: 1.5rem;
     }
 
     .form-label-custom {
@@ -344,6 +346,10 @@
     .sidebar .nav .nav-item:not(.active)>.nav-link i.menu-icon {
       color: #bba8bff5 !important;
     }
+
+    .sidebar-icon-only .nav-category {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -412,7 +418,7 @@
               <i class="mdi mdi-home menu-icon"></i>
             </a>
           </li>
-          <li class="nav-item pt-3">
+          <li class="nav-item pt-3 nav-category">
             <span class="nav-link text-uppercase text-muted font-weight-bold" style="font-size: 0.8rem">Content
               Management</span>
           </li>

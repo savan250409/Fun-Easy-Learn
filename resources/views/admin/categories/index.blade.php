@@ -62,9 +62,9 @@
                                 </td>
                                 <td>
                                     @if($category->status)
-                                        <span class="badge-active">Active</span>
+                                        <span class="badge-active status-toggle" data-id="{{ $category->id }}">Active</span>
                                     @else
-                                        <span class="badge-inactive">Inactive</span>
+                                        <span class="badge-inactive status-toggle" data-id="{{ $category->id }}">Inactive</span>
                                     @endif
                                 </td>
                                 <td>
@@ -152,6 +152,52 @@
                                 });
                         }
                     })
+                });
+            });
+
+            const statusToggles = document.querySelectorAll('.status-toggle');
+            statusToggles.forEach(toggle => {
+                toggle.addEventListener('click', function () {
+                    const id = this.getAttribute('data-id');
+                    const badge = this;
+
+                    fetch(`{{ url('admin/categories') }}/${id}/toggle-status`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                if (data.new_status) {
+                                    badge.textContent = 'Active';
+                                    badge.className = 'badge-active status-toggle';
+                                } else {
+                                    badge.textContent = 'Inactive';
+                                    badge.className = 'badge-inactive status-toggle';
+                                }
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Updated!',
+                                    text: data.message,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Something went wrong.',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false
+                            });
+                        });
                 });
             });
         });

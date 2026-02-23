@@ -8,10 +8,38 @@ use Illuminate\Http\Request;
 
 class CategoryApiController extends Controller
 {
-    public function getCategories(Request $request)
+    public function getAllCategories()
     {
-        // Fetch categories with all nested relationships, filtering by active status where applicable
-        $categories = Category::with([
+        $categories = Category::where('status', 1)->get();
+
+        $data = $categories->map(function ($category) {
+            return [
+                'id' => $category->id,
+                'key' => $category->key,
+                'title' => $category->title,
+                'image_url' => $category->image ? str_replace(' ', '%20', 'categories/' . $category->image) : null,
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Categories fetched successfully',
+            'data' => $data
+        ]);
+    }
+
+    public function getCategoryData(Request $request)
+    {
+        $categoryId = $request->category_id;
+
+        if (!$categoryId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'category_id is required',
+            ], 400);
+        }
+
+        $category = Category::with([
             'subCategories' => function ($query) {
                 $query->where('status', 1);
             },
@@ -21,57 +49,57 @@ class CategoryApiController extends Controller
             'subCategories.childCategories.items' => function ($query) {
                 $query->where('status', 1);
             }
-        ])->where('status', 1)->get();
+        ])->where('id', $categoryId)->where('status', 1)->first();
 
-        $data = $categories->map(function ($category) {
-            return [
-                'id' => 'cat_' . $category->id,
-                'key' => $category->key,
-                'title' => $category->title,
-                'image_url' => $category->image ? url('uploads/categories/' . $category->image) : null,
-                'sub_categories' => $category->subCategories->map(function ($subCategory) {
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Category not found or inactive',
+            ], 404);
+        }
 
-                    $children = $subCategory->childCategories->map(function ($childCategory) {
-                        return [
-                            'id' => 'child_' . $childCategory->id,
-                            'key' => $childCategory->key,
-                            'title' => $childCategory->title,
-                            'image_url' => $childCategory->image ? url('uploads/childcategories/' . $childCategory->image) : null,
-                            'total_item' => $childCategory->items->count(),
-                            'items' => $childCategory->items->map(function ($item) {
-                                return [
-                                    'id' => 'item_' . $item->id,
-                                    'title' => $item->title,
-                                    'image_url' => $item->image ? url('uploads/items/' . $item->image) : null,
-                                ];
-                            })->values()
-                        ];
-                    })->values();
+        $data = [
+            'id' => $category->id,
+            'key' => $category->key,
+            'title' => $category->title,
+            'image_url' => $category->image ? str_replace(' ', '%20', 'categories/' . $category->image) : null,
+            'sub_categories' => $category->subCategories->map(function ($subCategory) {
 
-                    $total_item = $subCategory->childCategories->sum(function ($childCategory) {
-                        return $childCategory->items->count();
-                    });
-
-                    $output = [
-                        'id' => 'sub_' . $subCategory->id,
-                        'key' => $subCategory->key,
-                        'title' => $subCategory->title,
-                        'image_url' => $subCategory->image ? url('uploads/subcategories/' . $subCategory->image) : null,
-                        'total_item' => $total_item,
+                $children = $subCategory->childCategories->map(function ($childCategory) {
+                    return [
+                        'id' => $childCategory->id,
+                        'key' => $childCategory->key,
+                        'title' => $childCategory->title,
+                        'image_url' => $childCategory->image ? str_replace(' ', '%20', 'childcategories/' . $childCategory->image) : null,
+                        'total_item' => $childCategory->items->count(),
+                        'items' => $childCategory->items->map(function ($item) {
+                            return [
+                                'id' => $item->id,
+                                'title' => $item->title,
+                                'image_url' => $item->image ? str_replace(' ', '%20', 'items/' . $item->image) : null,
+                            ];
+                        })->values()
                     ];
+                })->values();
 
-                    // Note: If you have a specific rule where empty "children" should collapse to just "items",
-                    // you can do logic here. Otherwise, the pure 4-level structure exposes children.
-                    $output['children'] = $children;
+                $total_item = $subCategory->childCategories->sum(function ($childCategory) {
+                    return $childCategory->items->count();
+                });
 
-                    return $output;
-                })->values()
-            ];
-        });
+                return [
+                    'id' => $subCategory->id,
+                    'key' => $subCategory->key,
+                    'title' => $subCategory->title,
+                    'image_url' => $subCategory->image ? str_replace(' ', '%20', 'subcategories/' . $subCategory->image) : null,
+                    'total_item' => $total_item,
+                    'children' => $children
+                ];
+            })->values()
+        ];
 
         return response()->json([
             'status' => true,
-            'message' => 'Data fetched successfully',
+            'message' => 'Category data fetched successfully',
             'data' => $data
         ]);
     }

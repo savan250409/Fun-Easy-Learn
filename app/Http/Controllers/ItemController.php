@@ -114,7 +114,20 @@ class ItemController extends Controller
     }
     public function getChildCategories($subCategoryId)
     {
-        $childCategories = ChildCategory::where('sub_category_id', $subCategoryId)->get();
+        $childCategories = ChildCategory::where('sub_category_id', $subCategoryId)->where('status', 1)->get();
         return response()->json($childCategories);
+    }
+
+    public function toggleStatus($id)
+    {
+        $item = Item::findOrFail($id);
+        $item->status = !$item->status;
+        $item->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Item status updated successfully.',
+            'new_status' => $item->status
+        ]);
     }
 }

@@ -98,4 +98,17 @@ class CategoryController extends Controller
             'message' => 'Category deleted successfully.'
         ]);
     }
+
+    public function toggleStatus($id)
+    {
+        $category = Category::findOrFail($id);
+        $category->status = !$category->status;
+        $category->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Category status updated successfully.',
+            'new_status' => $category->status
+        ]);
+    }
 }

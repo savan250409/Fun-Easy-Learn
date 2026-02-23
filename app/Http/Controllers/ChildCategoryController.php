@@ -119,7 +119,20 @@ class ChildCategoryController extends Controller
     }
     public function getSubcategories($categoryId)
     {
-        $subcategories = SubCategory::where('category_id', $categoryId)->get();
+        $subcategories = SubCategory::where('category_id', $categoryId)->where('status', 1)->get();
         return response()->json($subcategories);
+    }
+
+    public function toggleStatus($id)
+    {
+        $childCategory = ChildCategory::findOrFail($id);
+        $childCategory->status = !$childCategory->status;
+        $childCategory->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Child Category status updated successfully.',
+            'new_status' => $childCategory->status
+        ]);
     }
 }
