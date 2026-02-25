@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>{{ config('app.name', 'Admin Panel') }}</title>
+  <title>{{ config('app.name', 'NGD') }}</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="{{ asset('admin_panel/dist/assets/vendors/mdi/css/materialdesignicons.min.css') }}">
   <link rel="stylesheet" href="{{ asset('admin_panel/dist/assets/vendors/ti-icons/css/themify-icons.css') }}">
@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="{{ asset('admin_panel/dist/assets/css/style.css') }}">
   <link rel="shortcut icon" href="{{ asset('admin_panel/dist/assets/images/favicon.png') }}" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="api-token" content="{{ config('services.api.token') }}">
   @yield('styles')
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -359,8 +360,8 @@
     <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
         <a class="navbar-brand brand-logo" href="{{ url('/') }}"
-          style="color: purple; font-weight: bold; font-size: 24px;">Admin Panel</a>
-        <a class="navbar-brand brand-logo-mini" href="{{ url('/') }}" style="color: purple; font-weight: bold;">AP</a>
+          style="color: purple; font-weight: bold; font-size: 24px;">NGD</a>
+        <a class="navbar-brand brand-logo-mini" href="{{ url('/') }}" style="color: purple; font-weight: bold;">NGD</a>
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-stretch">
         <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -446,6 +447,15 @@
               <i class="mdi mdi-view-list menu-icon"></i>
             </a>
           </li>
+          <li class="nav-item pt-3 nav-category">
+            <span class="nav-link text-uppercase text-muted font-weight-bold" style="font-size: 0.8rem">API</span>
+          </li>
+          <li class="nav-item {{ request()->is('admin/api-list*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('api.list') }}">
+              <span class="menu-title">API URL</span>
+              <i class="mdi mdi-api menu-icon"></i>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- partial -->
@@ -457,7 +467,7 @@
         <!-- partial:partials/_footer.html -->
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Admin Panel &copy;
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">NGD &copy;
               {{ date('Y') }}.</span>
           </div>
         </footer>
@@ -472,6 +482,16 @@
   <script src="{{ asset('admin_panel/dist/assets/vendors/js/vendor.bundle.base.js') }}"></script>
   <script src="{{ asset('admin_panel/dist/assets/js/off-canvas.js') }}"></script>
   <script src="{{ asset('admin_panel/dist/assets/js/misc.js') }}"></script>
+
+  <script>
+    // Global AJAX setup to pass Bearer token and CSRF token
+    $.ajaxSetup({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+        'Authorization': 'Bearer ' + $('meta[name="api-token"]').attr('content')
+      }
+    });
+  </script>
 
   @if(session('success'))
     <script>

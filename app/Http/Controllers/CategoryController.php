@@ -84,15 +84,8 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        if ($category->subcategories()->count() > 0) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Cannot delete Category because it has SubCategories associated with it.'
-            ], 403);
-        }
-
-        if ($category->image && file_exists(public_path('upload/' . $category->image))) {
-            unlink(public_path('upload/' . $category->image));
+        if (file_exists(public_path('upload/' . $category->title))) {
+            $deleted = \Illuminate\Support\Facades\File::deleteDirectory(public_path('upload/' . $category->title));
         }
 
         $category->delete();

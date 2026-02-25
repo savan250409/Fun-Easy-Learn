@@ -100,16 +100,19 @@ class SubCategoryController extends Controller
 
     public function destroy(SubCategory $subcategory)
     {
-        if ($subcategory->childCategories()->count() > 0) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Cannot delete SubCategory because it has Child Categories associated with it.'
-            ], 403);
+        // Clean up related Item images
+        $items = \App\Models\Item::where('sub_category_id', $subcategory->id)->get();
+        foreach ($items as $item) {
+            $this->deleteImageAndCleanupFolder($item->image);
         }
 
-        if ($subcategory->image && file_exists(public_path('upload/' . $subcategory->image))) {
-            unlink(public_path('upload/' . $subcategory->image));
+        // Clean up related Child Category images
+        foreach ($subcategory->childCategories as $childCategory) {
+            $this->deleteImageAndCleanupFolder($childCategory->image);
         }
+
+        // Clean up SubCategory image itself
+        $this->deleteImageAndCleanupFolder($subcategory->image);
 
         $subcategory->delete();
 
@@ -117,6 +120,29 @@ class SubCategoryController extends Controller
             'status' => 'success',
             'message' => 'SubCategory deleted successfully.'
         ]);
+    }
+
+    private function deleteImageAndCleanupFolder($relativePath)
+    {
+        if (!$relativePath)
+            return;
+
+        $fullPath = public_path('upload/' . $relativePath);
+        if (file_exists($fullPath) && is_file($fullPath)) {
+            @unlink($fullPath);
+
+            // Check if the specific image folder (e.g., 'sub category image') is now empty
+            $specificFolder = dirname($fullPath);
+            if (is_dir($specificFolder) && count(scandir($specificFolder)) === 2) { // practically empty (only . and .. remain)
+                @rmdir($specificFolder);
+            }
+
+            // Check if the root Category folder is now empty
+            $categoryFolder = dirname($specificFolder);
+            if (is_dir($categoryFolder) && count(scandir($categoryFolder)) === 2) {
+                @rmdir($categoryFolder);
+            }
+        }
     }
 
     public function toggleStatus($id)

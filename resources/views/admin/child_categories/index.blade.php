@@ -118,54 +118,66 @@
                     const id = this.getAttribute('data-id');
                     Swal.fire({
                         title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        text: "Do you really want to delete this Child Category?",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#ff7b94',
                         cancelButtonColor: '#e2e6ea',
-                        confirmButtonText: 'Yes, delete it!'
+                        confirmButtonText: 'Yes, proceed'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            fetch(`{{ url('admin/child-categories') }}/${id}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Accept': 'application/json'
+                            Swal.fire({
+                                title: 'Warning!',
+                                text: "This will also delete all related Items and their images permanently. Proceed?",
+                                icon: 'error',
+                                showCancelButton: true,
+                                confirmButtonColor: '#ff7b94',
+                                cancelButtonColor: '#e2e6ea',
+                                confirmButtonText: 'Yes, delete everything!'
+                            }).then((secondResult) => {
+                                if (secondResult.isConfirmed) {
+                                    fetch(`{{ url('admin/child-categories') }}/${id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                            'Accept': 'application/json'
+                                        }
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.status === 'success') {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Deleted!',
+                                                    text: data.message,
+                                                    timer: 5000,
+                                                    timerProgressBar: true,
+                                                    showConfirmButton: false
+                                                });
+                                                document.getElementById(`row-${id}`).remove();
+                                            } else {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Cannot Delete!',
+                                                    text: data.message,
+                                                    timer: 5000,
+                                                    timerProgressBar: true,
+                                                    showConfirmButton: false
+                                                });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error!',
+                                                text: 'Something went wrong.',
+                                                timer: 5000,
+                                                timerProgressBar: true,
+                                                showConfirmButton: false
+                                            });
+                                        });
                                 }
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.status === 'success') {
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Deleted!',
-                                            text: data.message,
-                                            timer: 5000,
-                                            timerProgressBar: true,
-                                            showConfirmButton: false
-                                        });
-                                        document.getElementById(`row-${id}`).remove();
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Cannot Delete!',
-                                            text: data.message,
-                                            timer: 5000,
-                                            timerProgressBar: true,
-                                            showConfirmButton: false
-                                        });
-                                    }
-                                })
-                                .catch(error => {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error!',
-                                        text: 'Something went wrong.',
-                                        timer: 5000,
-                                        timerProgressBar: true,
-                                        showConfirmButton: false
-                                    });
-                                });
+                            });
                         }
                     })
                 });

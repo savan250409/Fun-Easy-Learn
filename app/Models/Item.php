@@ -10,6 +10,7 @@ class Item extends Model
     use HasFactory;
 
     protected $fillable = [
+        'sub_category_id',
         'child_category_id',
         'title',
         'image',
@@ -19,5 +20,10 @@ class Item extends Model
     public function childCategory()
     {
         return $this->belongsTo(ChildCategory::class);
+    }
+
+    public function subCategory()
+    {
+        return $this->belongsTo(SubCategory::class);
     }
 }

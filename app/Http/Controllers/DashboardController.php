@@ -10,4 +10,9 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard');
     }
+
+    public function apiList()
+    {
+        return view('admin.api_list');
+    }
 }

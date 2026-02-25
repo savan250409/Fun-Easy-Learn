@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Login - {{ config('app.name', 'Admin Panel') }}</title>
+    <title>Login - {{ config('app.name', 'NGD') }}</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{ asset('admin_panel/dist/assets/vendors/mdi/css/materialdesignicons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin_panel/dist/assets/vendors/ti-icons/css/themify-icons.css') }}">
@@ -23,7 +23,7 @@
                     <div class="col-lg-4 mx-auto">
                         <div class="auth-form-light text-left p-5">
                             <div class="brand-logo">
-                                <h2 style="color: purple; font-weight: bold;">Admin Panel</h2>
+                                <h2 style="color: purple; font-weight: bold;">NGD</h2>
                             </div>
                             <h4>Hello! let's get started</h4>
                             <h6 class="font-weight-light">Sign in to continue.</h6>
@@ -48,24 +48,13 @@
                                         class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn">SIGN
                                         IN</button>
                                 </div>
-                                <div class="my-2 d-flex justify-content-between align-items-center">
-                                    <div class="form-check">
-                                        <label class="form-check-label text-muted">
-                                            <input type="checkbox" name="remember" class="form-check-input" checked>
-                                            Keep me
-                                            signed in </label>
-                                    </div>
-                                </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- content-wrapper ends -->
         </div>
-        <!-- page-body-wrapper ends -->
     </div>
-    <!-- container-scroller -->
     <script src="{{ asset('admin_panel/dist/assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="{{ asset('admin_panel/dist/assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('admin_panel/dist/assets/js/misc.js') }}"></script>

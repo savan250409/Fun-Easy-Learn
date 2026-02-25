@@ -63,8 +63,15 @@
                                 <td class="font-weight-bold">{{ $item->id }}</td>
                                 <td>{{ $item->title }}</td>
                                 <td class="text-muted" style="font-size:0.8rem;">
-                                    {{ $item->childCategory->subCategory->title ?? 'N/A' }} ❭
-                                    <strong>{{ $item->childCategory->title ?? 'N/A' }}</strong>
+                                    @if($item->childCategory)
+                                        {{ $item->childCategory->subCategory->title ?? 'N/A' }} ❭
+                                        <strong>{{ $item->childCategory->title ?? 'N/A' }}</strong>
+                                    @elseif($item->subCategory)
+                                        {{ $item->subCategory->category->title ?? 'N/A' }} ❭
+                                        <strong>{{ $item->subCategory->title ?? 'N/A' }}</strong>
+                                    @else
+                                        N/A
+                                    @endif
                                 </td>
                                 <td>
                                     @if($item->image)

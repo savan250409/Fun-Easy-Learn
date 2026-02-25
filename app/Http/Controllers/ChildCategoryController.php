@@ -54,8 +54,8 @@ class ChildCategoryController extends Controller
             $subCategory = SubCategory::findOrFail($request->sub_category_id);
             $categoryTitle = $subCategory->category->title;
             $imageName = $request->image->getClientOriginalName();
-            $relativePath = $categoryTitle . '/chield category image/' . $imageName;
-            $request->image->move(public_path('upload/' . $categoryTitle . '/chield category image'), $imageName);
+            $relativePath = $categoryTitle . '/child category image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/child category image'), $imageName);
             $data['image'] = $relativePath;
         }
 
@@ -93,8 +93,8 @@ class ChildCategoryController extends Controller
             $subCategory = SubCategory::findOrFail($request->sub_category_id);
             $categoryTitle = $subCategory->category->title;
             $imageName = $request->image->getClientOriginalName();
-            $relativePath = $categoryTitle . '/chield category image/' . $imageName;
-            $request->image->move(public_path('upload/' . $categoryTitle . '/chield category image'), $imageName);
+            $relativePath = $categoryTitle . '/child category image/' . $imageName;
+            $request->image->move(public_path('upload/' . $categoryTitle . '/child category image'), $imageName);
             $data['image'] = $relativePath;
         }
 
@@ -105,16 +105,14 @@ class ChildCategoryController extends Controller
 
     public function destroy(ChildCategory $childCategory)
     {
-        if ($childCategory->items()->count() > 0) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Cannot delete Child Category because it has Items associated with it.'
-            ], 403);
+        // Clean up related Item images
+        $items = \App\Models\Item::where('child_category_id', $childCategory->id)->get();
+        foreach ($items as $item) {
+            $this->deleteImageAndCleanupFolder($item->image);
         }
 
-        if ($childCategory->image && file_exists(public_path('upload/' . $childCategory->image))) {
-            unlink(public_path('upload/' . $childCategory->image));
-        }
+        // Clean up ChildCategory image itself
+        $this->deleteImageAndCleanupFolder($childCategory->image);
 
         $childCategory->delete();
 
@@ -122,6 +120,29 @@ class ChildCategoryController extends Controller
             'status' => 'success',
             'message' => 'Child Category deleted successfully.'
         ]);
+    }
+
+    private function deleteImageAndCleanupFolder($relativePath)
+    {
+        if (!$relativePath)
+            return;
+
+        $fullPath = public_path('upload/' . $relativePath);
+        if (file_exists($fullPath) && is_file($fullPath)) {
+            @unlink($fullPath);
+
+            // Check if the specific image folder (e.g., 'chield category image') is now empty
+            $specificFolder = dirname($fullPath);
+            if (is_dir($specificFolder) && count(scandir($specificFolder)) === 2) { // practically empty (only . and .. remain)
+                @rmdir($specificFolder);
+            }
+
+            // Check if the root Category folder is now empty
+            $categoryFolder = dirname($specificFolder);
+            if (is_dir($categoryFolder) && count(scandir($categoryFolder)) === 2) {
+                @rmdir($categoryFolder);
+            }
+        }
     }
     public function getSubcategories($categoryId)
     {

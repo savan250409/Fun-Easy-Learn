@@ -28,6 +28,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/api-list', [DashboardController::class, 'apiList'])->name('api.list');
 
     // Resource routes for the modules will go here later
     Route::resource('categories', 'App\Http\Controllers\CategoryController');

@@ -51,7 +51,7 @@
                 <div class="mb-4">
                     <label for="child_category_id" class="form-label-custom d-block">Parent Child Category</label>
                     <select class="form-control-custom @error('child_category_id') is-invalid @enderror"
-                        id="child_category_id" name="child_category_id" required>
+                        id="child_category_id" name="child_category_id">
                         <option value="">Select Child Category</option>
                         @foreach($childCategories as $childCat)
                             <option value="{{ $childCat->id }}" {{ old('child_category_id', $item->child_category_id ?? '') == $childCat->id ? 'selected' : '' }}>

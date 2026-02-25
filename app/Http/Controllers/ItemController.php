@@ -15,7 +15,7 @@ class ItemController extends Controller
         $search = $request->input('search');
         $childCategoryId = $request->input('child_category_id');
 
-        $items = Item::with('childCategory.subCategory.category')
+        $items = Item::with(['childCategory.subCategory.category', 'subCategory.category'])
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', "%{$search}%");
             })
@@ -41,7 +41,8 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'child_category_id' => 'required|exists:child_categories,id',
+            'sub_category_id' => 'required|exists:sub_categories,id',
+            'child_category_id' => 'nullable|exists:child_categories,id',
             'title' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
             'status' => 'boolean',
@@ -51,8 +52,13 @@ class ItemController extends Controller
         $data['status'] = $request->has('status') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            $childCategory = ChildCategory::findOrFail($request->child_category_id);
-            $categoryTitle = $childCategory->subCategory->category->title;
+            if ($request->filled('child_category_id')) {
+                $childCategory = ChildCategory::findOrFail($request->child_category_id);
+                $categoryTitle = $childCategory->subCategory->category->title;
+            } else {
+                $subCategory = SubCategory::findOrFail($request->sub_category_id);
+                $categoryTitle = $subCategory->category->title;
+            }
             $imageName = $request->image->getClientOriginalName();
             $relativePath = $categoryTitle . '/item image/' . $imageName;
             $request->image->move(public_path('upload/' . $categoryTitle . '/item image'), $imageName);
@@ -67,8 +73,14 @@ class ItemController extends Controller
     public function edit(Item $item)
     {
         $categories = Category::all();
-        $selectedSubCategoryId = $item->childCategory->sub_category_id ?? null;
-        $selectedCategoryId = $item->childCategory->subCategory->category_id ?? null;
+        $selectedSubCategoryId = $item->sub_category_id ?? ($item->childCategory->sub_category_id ?? null);
+        $selectedCategoryId = null;
+
+        if ($item->subCategory) {
+            $selectedCategoryId = $item->subCategory->category_id;
+        } elseif ($item->childCategory) {
+            $selectedCategoryId = $item->childCategory->subCategory->category_id;
+        }
 
         $subCategories = SubCategory::where('category_id', $selectedCategoryId)->get();
         $childCategories = ChildCategory::where('sub_category_id', $selectedSubCategoryId)->get();
@@ -79,7 +91,8 @@ class ItemController extends Controller
     public function update(Request $request, Item $item)
     {
         $request->validate([
-            'child_category_id' => 'required|exists:child_categories,id',
+            'sub_category_id' => 'required|exists:sub_categories,id',
+            'child_category_id' => 'nullable|exists:child_categories,id',
             'title' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
             'status' => 'boolean',
@@ -92,8 +105,13 @@ class ItemController extends Controller
             if ($item->image && file_exists(public_path('upload/' . $item->image))) {
                 unlink(public_path('upload/' . $item->image));
             }
-            $childCategory = ChildCategory::findOrFail($request->child_category_id);
-            $categoryTitle = $childCategory->subCategory->category->title;
+            if ($request->filled('child_category_id')) {
+                $childCategory = ChildCategory::findOrFail($request->child_category_id);
+                $categoryTitle = $childCategory->subCategory->category->title;
+            } else {
+                $subCategory = SubCategory::findOrFail($request->sub_category_id);
+                $categoryTitle = $subCategory->category->title;
+            }
             $imageName = $request->image->getClientOriginalName();
             $relativePath = $categoryTitle . '/item image/' . $imageName;
             $request->image->move(public_path('upload/' . $categoryTitle . '/item image'), $imageName);
