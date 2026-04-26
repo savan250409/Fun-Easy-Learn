@@ -13,6 +13,8 @@ class SubCategoryController extends Controller
         $search = $request->input('search');
         $categoryId = $request->input('category_id');
 
+        $perPage = in_array((int) $request->input('per_page'), [5, 10, 50, 100]) ? (int) $request->input('per_page') : 10;
+
         $subcategories = SubCategory::with('category')
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', "%{$search}%")
@@ -22,9 +24,19 @@ class SubCategoryController extends Controller
                 return $query->where('category_id', $categoryId);
             })
             ->latest()
-            ->paginate(10);
+            ->paginate($perPage);
 
         $categories = Category::all();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'rows_html'       => view('admin.subcategories._rows', compact('subcategories'))->render(),
+                'pagination_html' => $subcategories->links('pagination::bootstrap-4')->render(),
+                'from'            => $subcategories->firstItem() ?? 0,
+                'to'              => $subcategories->lastItem() ?? 0,
+                'total'           => $subcategories->total(),
+            ]);
+        }
 
         return view('admin.subcategories.index', compact('subcategories', 'search', 'categories', 'categoryId'));
     }

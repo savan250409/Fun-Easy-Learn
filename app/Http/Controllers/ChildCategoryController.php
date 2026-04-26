@@ -14,6 +14,8 @@ class ChildCategoryController extends Controller
         $search = $request->input('search');
         $subCategoryId = $request->input('sub_category_id');
 
+        $perPage = in_array((int) $request->input('per_page'), [5, 10, 50, 100]) ? (int) $request->input('per_page') : 10;
+
         $childCategories = ChildCategory::with('subCategory.category')
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', "%{$search}%")
@@ -23,9 +25,19 @@ class ChildCategoryController extends Controller
                 return $query->where('sub_category_id', $subCategoryId);
             })
             ->latest()
-            ->paginate(10);
+            ->paginate($perPage);
 
         $subCategories = SubCategory::with('category')->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'rows_html'       => view('admin.child_categories._rows', compact('childCategories'))->render(),
+                'pagination_html' => $childCategories->links('pagination::bootstrap-4')->render(),
+                'from'            => $childCategories->firstItem() ?? 0,
+                'to'              => $childCategories->lastItem() ?? 0,
+                'total'           => $childCategories->total(),
+            ]);
+        }
 
         return view('admin.child_categories.index', compact('childCategories', 'search', 'subCategories', 'subCategoryId'));
     }

@@ -11,10 +11,22 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $perPage = in_array((int) $request->input('per_page'), [5, 10, 50, 100]) ? (int) $request->input('per_page') : 10;
+
         $categories = Category::when($search, function ($query, $search) {
             return $query->where('title', 'like', "%{$search}%")
                 ->orWhere('key', 'like', "%{$search}%");
-        })->latest()->paginate(10);
+        })->latest()->paginate($perPage);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'rows_html'       => view('admin.categories._rows', compact('categories'))->render(),
+                'pagination_html' => $categories->links('pagination::bootstrap-4')->render(),
+                'from'            => $categories->firstItem() ?? 0,
+                'to'              => $categories->lastItem() ?? 0,
+                'total'           => $categories->total(),
+            ]);
+        }
 
         return view('admin.categories.index', compact('categories', 'search'));
     }

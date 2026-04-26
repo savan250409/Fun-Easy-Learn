@@ -15,6 +15,8 @@ class ItemController extends Controller
         $search = $request->input('search');
         $childCategoryId = $request->input('child_category_id');
 
+        $perPage = in_array((int) $request->input('per_page'), [5, 10, 50, 100]) ? (int) $request->input('per_page') : 10;
+
         $items = Item::with(['childCategory.subCategory.category', 'subCategory.category'])
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', "%{$search}%");
@@ -23,9 +25,19 @@ class ItemController extends Controller
                 return $query->where('child_category_id', $childCategoryId);
             })
             ->latest()
-            ->paginate(10);
+            ->paginate($perPage);
 
         $childCategories = ChildCategory::with('subCategory.category')->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'rows_html'       => view('admin.items._rows', compact('items'))->render(),
+                'pagination_html' => $items->links('pagination::bootstrap-4')->render(),
+                'from'            => $items->firstItem() ?? 0,
+                'to'              => $items->lastItem() ?? 0,
+                'total'           => $items->total(),
+            ]);
+        }
 
         return view('admin.items.index', compact('items', 'search', 'childCategories', 'childCategoryId'));
     }
