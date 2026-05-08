@@ -72,9 +72,12 @@ class ItemController extends Controller
                 $categoryTitle = $subCategory->category->title;
             }
             $imageName = $request->image->getClientOriginalName();
-            $relativePath = $categoryTitle . '/item image/' . $imageName;
-            $request->image->move(public_path('upload/' . $categoryTitle . '/item image'), $imageName);
-            $data['image'] = $relativePath;
+            $uploadDir = public_path('upload/' . $categoryTitle . '/item image');
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0755, true);
+            }
+            $request->image->move($uploadDir, $imageName);
+            $data['image'] = $categoryTitle . '/item image/' . $imageName;
         }
 
         Item::create($data);
@@ -125,9 +128,12 @@ class ItemController extends Controller
                 $categoryTitle = $subCategory->category->title;
             }
             $imageName = $request->image->getClientOriginalName();
-            $relativePath = $categoryTitle . '/item image/' . $imageName;
-            $request->image->move(public_path('upload/' . $categoryTitle . '/item image'), $imageName);
-            $data['image'] = $relativePath;
+            $uploadDir = public_path('upload/' . $categoryTitle . '/item image');
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0755, true);
+            }
+            $request->image->move($uploadDir, $imageName);
+            $data['image'] = $categoryTitle . '/item image/' . $imageName;
         }
 
         $item->update($data);

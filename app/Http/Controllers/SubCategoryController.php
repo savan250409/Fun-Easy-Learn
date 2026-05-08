@@ -64,9 +64,12 @@ class SubCategoryController extends Controller
             $category = Category::findOrFail($request->category_id);
             $categoryTitle = $category->title;
             $imageName = $request->image->getClientOriginalName();
-            $relativePath = $categoryTitle . '/sub category image/' . $imageName;
-            $request->image->move(public_path('upload/' . $categoryTitle . '/sub category image'), $imageName);
-            $data['image'] = $relativePath;
+            $uploadDir = public_path('upload/' . $categoryTitle . '/sub category image');
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0755, true);
+            }
+            $request->image->move($uploadDir, $imageName);
+            $data['image'] = $categoryTitle . '/sub category image/' . $imageName;
         }
 
         SubCategory::create($data);
@@ -100,9 +103,12 @@ class SubCategoryController extends Controller
             $category = Category::findOrFail($request->category_id);
             $categoryTitle = $category->title;
             $imageName = $request->image->getClientOriginalName();
-            $relativePath = $categoryTitle . '/sub category image/' . $imageName;
-            $request->image->move(public_path('upload/' . $categoryTitle . '/sub category image'), $imageName);
-            $data['image'] = $relativePath;
+            $uploadDir = public_path('upload/' . $categoryTitle . '/sub category image');
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0755, true);
+            }
+            $request->image->move($uploadDir, $imageName);
+            $data['image'] = $categoryTitle . '/sub category image/' . $imageName;
         }
 
         $subcategory->update($data);

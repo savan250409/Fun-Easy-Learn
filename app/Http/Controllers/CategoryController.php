@@ -51,9 +51,12 @@ class CategoryController extends Controller
         if ($request->hasFile('image')) {
             $categoryTitle = $request->title;
             $imageName = $request->image->getClientOriginalName();
-            $relativePath = $categoryTitle . '/category image/' . $imageName;
-            $request->image->move(public_path('upload/' . $categoryTitle . '/category image'), $imageName);
-            $data['image'] = $relativePath;
+            $uploadDir = public_path('upload/' . $categoryTitle . '/category image');
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0755, true);
+            }
+            $request->image->move($uploadDir, $imageName);
+            $data['image'] = $categoryTitle . '/category image/' . $imageName;
         }
 
         Category::create($data);
@@ -84,9 +87,12 @@ class CategoryController extends Controller
             }
             $categoryTitle = $request->title;
             $imageName = $request->image->getClientOriginalName();
-            $relativePath = $categoryTitle . '/category image/' . $imageName;
-            $request->image->move(public_path('upload/' . $categoryTitle . '/category image'), $imageName);
-            $data['image'] = $relativePath;
+            $uploadDir = public_path('upload/' . $categoryTitle . '/category image');
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0755, true);
+            }
+            $request->image->move($uploadDir, $imageName);
+            $data['image'] = $categoryTitle . '/category image/' . $imageName;
         }
 
         $category->update($data);
