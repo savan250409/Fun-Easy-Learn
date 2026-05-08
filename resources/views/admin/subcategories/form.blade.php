@@ -72,7 +72,10 @@
                         <div class="file-upload-text" id="fileName">
                             {{ isset($subcategory) && $subcategory->image ? '1 file attached' : 'No file chosen' }}
                         </div>
-                        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                        <input type="file" id="image" name="image" accept=".webp,image/webp" onchange="previewImage(event)">
+                    </div>
+                    <div class="mt-1" style="font-size:0.8rem; color:#d97706;">
+                        <i class="mdi mdi-alert-outline"></i> Only WebP images are allowed
                     </div>
                     @error('image')<div class="text-danger mt-1" style="font-size:0.8rem;">{{ $message }}</div>@enderror
 
@@ -97,6 +100,21 @@
     <script>
         function previewImage(event) {
             var input = event.target;
+            if (input.files.length > 0) {
+                var file = input.files[0];
+                var isWebp = file.type === 'image/webp' || file.name.toLowerCase().endsWith('.webp');
+                if (!isWebp) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File',
+                        text: 'Only WebP images are allowed.',
+                    });
+                    input.value = '';
+                    document.getElementById('fileName').textContent = 'No file chosen';
+                    return;
+                }
+            }
+
             var fileName = input.files.length > 0 ? input.files[0].name : 'No file chosen';
             document.getElementById('fileName').textContent = fileName;
 

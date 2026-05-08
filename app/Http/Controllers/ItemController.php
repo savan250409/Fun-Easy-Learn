@@ -56,7 +56,7 @@ class ItemController extends Controller
             'sub_category_id' => 'required|exists:sub_categories,id',
             'child_category_id' => 'nullable|exists:child_categories,id',
             'title' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'image' => 'nullable|mimes:webp|max:5120',
             'status' => 'boolean',
         ]);
 
@@ -109,7 +109,7 @@ class ItemController extends Controller
             'sub_category_id' => 'required|exists:sub_categories,id',
             'child_category_id' => 'nullable|exists:child_categories,id',
             'title' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'image' => 'nullable|mimes:webp|max:5120',
             'status' => 'boolean',
         ]);
 

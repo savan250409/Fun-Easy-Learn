@@ -53,7 +53,7 @@ class SubCategoryController extends Controller
             'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
             'key' => 'required|string|max:255|unique:sub_categories,key',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'image' => 'nullable|mimes:webp|max:5120',
             'status' => 'boolean',
         ]);
 
@@ -89,7 +89,7 @@ class SubCategoryController extends Controller
             'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
             'key' => 'required|string|max:255|unique:sub_categories,key,' . $subcategory->id,
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'image' => 'nullable|mimes:webp|max:5120',
             'status' => 'boolean',
         ]);
 

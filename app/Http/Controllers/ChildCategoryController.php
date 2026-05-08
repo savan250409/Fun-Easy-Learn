@@ -55,7 +55,7 @@ class ChildCategoryController extends Controller
             'sub_category_id' => 'required|exists:sub_categories,id',
             'title' => 'required|string|max:255',
             'key' => 'required|string|max:255|unique:child_categories,key',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'image' => 'nullable|mimes:webp|max:5120',
             'status' => 'boolean',
         ]);
 
@@ -94,7 +94,7 @@ class ChildCategoryController extends Controller
             'sub_category_id' => 'required|exists:sub_categories,id',
             'title' => 'required|string|max:255',
             'key' => 'required|string|max:255|unique:child_categories,key,' . $childCategory->id,
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'image' => 'nullable|mimes:webp|max:5120',
             'status' => 'boolean',
         ]);
 
